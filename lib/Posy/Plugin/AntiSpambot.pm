@@ -7,11 +7,11 @@ Posy::Plugin::AntiSpambot - Posy plugin to obfustcate mail links.
 
 =head1 VERSION
 
-This describes version B<0.50> of Posy::Plugin::AntiSpambot.
+This describes version B<0.60> of Posy::Plugin::AntiSpambot.
 
 =cut
 
-our $VERSION = '0.50';
+our $VERSION = '0.60';
 
 =head1 SYNOPSIS
 
@@ -194,8 +194,7 @@ sub anti_spambot_show_mail {
 	my $domain =
 	    $self->param($self->{config}->{anti_spambot_domain_param});
 	$|++;
-	print "Content-type: text/html\n";
-	print "\n";
+	$self->print_header(content_type=>'text/html');
 	print "<html><body>\n";
 	print "<head><title>$user\@$domain</title></head>\n";
 	print $self->{config}->{anti_spambot_message}, "\n";

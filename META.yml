@@ -1,16 +1,16 @@
 --- #YAML:1.0
 name: Posy-Plugin-AntiSpambot
-version: 0.50
+version: 0.60
 author:
   - Kathryn Andersen
 abstract: Posy plugin to obfustcate mail links.
 license: perl
 requires:
-  Posy: 0.4
+  Posy: 0.8
 build_requires:
   Test::More: 0
 provides:
   Posy::Plugin::AntiSpambot:
     file: lib/Posy/Plugin/AntiSpambot.pm
-    version: 0.50
-generated_by: Module::Build version 0.2607
+    version: 0.60
+generated_by: Module::Build version 0.2605

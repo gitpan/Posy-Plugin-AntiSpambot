@@ -1,6 +1,15 @@
 Revision history for Posy-Plugin-AntiSpambot
 ============================================
 
+0.60 Sat 29 January 2005
+------------------------
+
+  * (29 Jan 2005) removed Makefile.PL
+
+  * (29 Jan 2005) print header fix
+  	This should have been using $self->print_header.
+  This now uses the Posy 0.80 version of same.
+
 0.50 Sun 16 January 2005
 ------------------------
 
