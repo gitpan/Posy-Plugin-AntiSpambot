@@ -1,0 +1,117 @@
+
+==== NAME ====
+
+Posy::Plugin::AntiSpambot - Posy plugin to obfustcate mail links
+
+
+==== VERSION ====
+
+This describes version ``0.42'' of Posy::Plugin::AntiSpambot.
+
+
+==== DESCRIPTION ====
+
+The aim of this plugin is to frustrate the attempts of spambots to harvest
+email addresses from your website, by concealing them by altering mailto:
+links according to a given policy. The choice of concealment policy is up to
+you.
+
+Policies:
+
+spell
+Convert the link to plain text where the email is spelled out; the @ sign is
+converted to ' at ' and the '.' parts are converted to ' dot '.
+
+cgi_link
+Convert the mailto link to a link to the Posy cgi script with two parameters
+-- the username and the domain of the original email address. When someone
+clicks on the link, AntiSpambot will then interpret these parameters
+correctly and do a redirect to a mailto: URL, which your browser will then
+interpret just as if the original link were still there.
+
+form
+This is just like cgi_link above, but instead of putting the parameters into
+a link (which might be parsed by the spambot) it puts it into a form (which
+spambots are less likely to parse). And you get a button for folks to click
+on.
+
+
+==   Activation   ==
+
+Add the plugin to the plugin list.
+
+This plugin creates an 'anti_spambot_obscure_mail' entry action, which
+should be placed after 'parse_entry' in the entry_action list. If you are
+using the Posy::Plugin::ShortBody plugin, this should be placed after
+'short_body' in the entry_action list, not before it.
+
+This plugin also creates an 'anti_spambot_redirect_mail' action which will
+check the incoming parameters and give a redirect to a mailto: url. It needs
+to be placed after set_config in the action list, as it checks config
+variables.
+
+
+==   Configuration   ==
+
+This expects configuration settings in the $self->{config} hash, which, in
+the default Posy setup, can be defined in the main "config" file in the
+config directory.
+
+``anti_spambot_policy''
+The policy to use on email links. By setting different configs in different
+directories, you can change this on a per-directory basis.
+
+``anti_spambot_at''
+The string to replace the '@' sign with if using the 'spell' policy.
+(default: ' at ')
+
+``anti_spambot_dot''
+The string to replace the '.' with if using the 'spell' policy. (default: '
+dot ')
+
+``anti_spambot_prefix''
+The string to prefix the email with if using the 'spell' policy. (default:
+&lt;)
+
+``anti_spambot_suffix''
+The string to append to the email if using the 'spell' policy. (default:
+&gt;)
+
+``anti_spambot_user_param''
+The name of the parameter to define the user if using the 'cgi_link' or
+'form' policy. There is deliberately no default for this, because everyone
+ought to define their own parameter, so that the spambots can't figure out a
+pattern.
+
+``anti_spambot_domain_param''
+The name of the parameter to define the domain if using the 'cgi_link' or
+'form' policy. There is deliberately no default for this, because everyone
+ought to define their own parameter, so that the spambots can't figure out a
+pattern.
+
+
+==== REQUIRES ====
+
+    Posy
+    Posy::Core
+
+    Test::More
+
+
+==== AUTHOR ====
+
+    Kathryn Andersen (RUBYKAT)
+    perlkat AT katspace dot com
+    http://www.katspace.com
+
+
+==== COPYRIGHT AND LICENCE ====
+
+Copyright (c) 2005 by Kathryn Andersen http://www.katspace.com
+
+Based in part on the Nomailto.pl script Written by Greg Mullane <greg AT
+turnstep DOT com> http://www.turnstep.com/Spambot/
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
