@@ -3,15 +3,15 @@ use strict;
 
 =head1 NAME
 
-Posy::Plugin::AntiSpambot - Posy plugin to obfustcate mail links
+Posy::Plugin::AntiSpambot - Posy plugin to obfustcate mail links.
 
 =head1 VERSION
 
-This describes version B<0.42> of Posy::Plugin::AntiSpambot.
+This describes version B<0.50> of Posy::Plugin::AntiSpambot.
 
 =cut
 
-our $VERSION = '0.42';
+our $VERSION = '0.50';
 
 =head1 SYNOPSIS
 
@@ -21,7 +21,7 @@ our $VERSION = '0.42';
     @actions = qw(init_params
 	...
 	set_config
-	anti_spambot_redirect_mail
+	anti_spambot_show_mail
 	...
     );
     @entry_actions = qw(header
@@ -52,9 +52,10 @@ is converted to ' at ' and the '.' parts are converted to ' dot '.
 Convert the mailto link to a link to the Posy cgi script with two
 parameters -- the username and the domain of the original email
 address.  When someone clicks on the link, AntiSpambot will then
-interpret these parameters correctly and do a redirect to a mailto: URL,
-which your browser will then interpret just as if the original
-link were still there.
+interpret these parameters correctly and display a special page which
+contains the original mailto: link.  Because the spambot didn't know
+that the cgi_link was for email, it doesn't harvest the email address
+from the cgi link, and the user is only slightly inconvenienced.
 
 =item form
 
@@ -74,8 +75,8 @@ be placed after 'parse_entry' in the entry_action list.  If you are using
 the Posy::Plugin::ShortBody plugin, this should be placed after
 'short_body' in the entry_action list, not before it.
 
-This plugin also creates an 'anti_spambot_redirect_mail' action which will
-check the incoming parameters and give a redirect to a mailto: url.
+This plugin also creates an 'anti_spambot_show_mail' action which will
+check the incoming parameters and display a special page with a mailto: link.
 It needs to be placed after set_config in the action list, as it
 checks config variables.
 
@@ -126,6 +127,12 @@ or 'form' policy.  There is deliberately no default for this, because
 everyone ought to define their own parameter, so that the spambots
 can't figure out a pattern.
 
+=item B<anti_spambot_message>
+
+A message to put on the special page which displays the mailto: link
+when using the 'cgi_link' or 'form' policy.
+(default: '<p>Sorry for the extra click, but this prevents email harvesting.</p>')
+
 =back
 
 =cut
@@ -154,20 +161,24 @@ sub init {
 	if (!defined $self->{config}->{anti_spambot_prefix});
     $self->{config}->{anti_spambot_suffix} = '&gt;'
 	if (!defined $self->{config}->{anti_spambot_suffix});
+    $self->{config}->{anti_spambot_message} =
+	'<p>Sorry for the extra click, but this prevents email harvesting.</p>'
+	if (!defined $self->{config}->{anti_spambot_message});
 } # init
 
 =head1 Flow Action Methods
 
 Methods implementing actions.
 
-=head2 anti_spambot_redirect_mail
+=head2 anti_spambot_show_mail
 
-$self->anti_spambot_redirect_mail($flow_state)
+$self->anti_spambot_show_mail($flow_state)
 
-If the AntiSpambot parameters are present, redirect to a mailto: URL
+If the AntiSpambot parameters are present, display a special
+page with a mailto: link.
 
 =cut
-sub anti_spambot_redirect_mail {
+sub anti_spambot_show_mail {
     my $self = shift;
     my $flow_state = shift;
 
@@ -183,14 +194,17 @@ sub anti_spambot_redirect_mail {
 	my $domain =
 	    $self->param($self->{config}->{anti_spambot_domain_param});
 	$|++;
-	print "Location: mailto:$user\@$domain\n";
-	print "Content-type: text/plain\n";
+	print "Content-type: text/html\n";
 	print "\n";
-	print "Email to $user\@$domain!\n";
+	print "<html><body>\n";
+	print "<head><title>$user\@$domain</title></head>\n";
+	print $self->{config}->{anti_spambot_message}, "\n";
+	print "<p><a href=\"mailto:$user\@$domain\">$user\@$domain</a></p>\n";
+	print "</body></html>\n";
 	$flow_state->{stop} = 1;
     }
     1;
-} # anti_spambot_redirect_mail
+} # anti_spambot_show_mail
 
 =head1 Entry Action Methods
 
