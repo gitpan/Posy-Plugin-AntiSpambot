@@ -8,7 +8,7 @@ my $builder = Module::Build->new(
     dist_author         => 'Kathryn Andersen',
     dist_version_from   => 'lib/Posy/Plugin/AntiSpambot.pm',
 	requires            => {
-	'Posy' => 0.80,
+	'Posy' => 0.90,
 	},
     build_requires => {
         'Test::More' => 0,
